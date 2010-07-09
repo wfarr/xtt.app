@@ -3,17 +3,34 @@ require 'hotcocoa'
 # Replace the following code with your own hotcocoa code
 
 class Xtt
-
   include HotCocoa
   
   def start
-    application :name => "Xtt" do |app|
-      app.delegate = self
+    @app = application :name => "Xtt", :delegate => self
+    @status = status_item
+    set_status_menu
+    @app.run
+  end
+
+  def set_status_menu
+    @menu = status_menu
+    @status.view = nil
+    @status.menu = @menu
+    @status.title = "Xtt Item"
+    @status.setHighlightMode true
+  end
+
+  def status_menu
+    menu :delegate => self do |status|
+      status.item "New Status", :on_action => proc { new_window }
+      status.separator
+      status.item "Preferences", :on_action => proc { preferences }
+      status.separator
+      status.item "Quit", :on_action => proc { @app.terminate self }
     end
   end
 
-  # file/new 
-  def on_new(menu)
+  def new_window
     window :size => [400,150], :center => true, :title => "New Status", :view => :layout,
            :style => [:titled, :closable, :textured] do |win|
       win.contentView.margin = 0
@@ -42,17 +59,6 @@ class Xtt
         end
       end
     end
-  end
-
-  # xtt/preferences
-  def on_preferences(menu)
-    window :frame => [100, 100, 100, 100], :title => "Preferences" do |win|
-      win << label(:text => "Prefs window!")
-    end
-  end
-
-  # This is commented out, so the minimize menu item is disabled
-  def on_minimize(menu)
   end
 end
 
